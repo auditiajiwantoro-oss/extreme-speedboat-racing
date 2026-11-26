@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXTREME SPEED BOAT RACING</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- ================= HUD ================= -->
+<div id="hud" class="hidden">
+  <div class="hud-tl panel">
+    <div class="pos"><span id="pos">1</span><sup id="posSuf">ST</sup><small>/ <span id="posTot">4</span></small></div>
+    <div class="lbl">POSITION</div>
+  </div>
+  <div class="hud-tc panel">
+    <div class="lbl">RACE TIME</div>
+    <div id="timer" class="timer">0:00.000</div>
+    <div class="laptimes"><span>LAP <b id="lapTime">0:00.000</b></span><span>BEST <b id="bestLap">--:--.---</b></span></div>
+  </div>
+  <div class="hud-tr panel">
+    <div class="lap"><small>LAP</small> <span id="lapCur">1</span><small>/ <span id="lapTot">3</span></small></div>
+    <div class="lbl">CHECKPOINT <b id="cpText">0/8</b></div>
+    <div id="cpPips" class="pips"></div>
+  </div>
+  <div id="standings" class="standings"></div>
+  <div class="hud-bl panel"><canvas id="minimap" width="200" height="200"></canvas></div>
+  <div class="hud-br">
+    <canvas id="gauge" width="280" height="280"></canvas>
+    <div class="nitro"><span>NITRO</span><div class="bar"><div id="nitroFill"></div></div></div>
+  </div>
+  <div id="msg" class="msg"></div>
+  <div id="warn" class="warn"></div>
+</div>
+<div id="countdown"></div>
+
+<!-- ================= MENU ================= -->
+<div id="menu">
+  <section id="scr-main" class="screen active">
+    <div class="title"><span class="t1">EXTREME</span><span class="t2">SPEED BOAT</span><span class="t3">RACING</span></div>
+    <nav>
+      <button class="btn primary" data-act="start">START RACE</button>
+      <button class="btn" data-go="boats">BOAT SELECTION</button>
+      <button class="btn" data-go="settings">SETTINGS</button>
+      <button class="btn" data-go="how">HOW TO PLAY</button>
+    </nav>
+    <div class="foot">Tropical Ocean Circuit · <span id="menuBoat">SPORT RACING</span></div>
+  </section>
+
+  <section id="scr-boats" class="screen">
+    <h2>BOAT SELECTION</h2>
+    <div class="boatcard">
+      <button class="arrow" data-act="prevBoat">&#9664;</button>
+      <div class="boatinfo">
+        <div id="boatName" class="boatname">SPORT RACING</div>
+        <div id="boatDesc" class="boatdesc"></div>
+        <div class="stats">
+          <div class="stat"><span>TOP SPEED</span><div class="bar"><div id="stSpeed"></div></div><b id="stSpeedV"></b></div>
+          <div class="stat"><span>ACCELERATION</span><div class="bar"><div id="stAccel"></div></div><b></b></div>
+          <div class="stat"><span>HANDLING</span><div class="bar"><div id="stHandling"></div></div><b></b></div>
+          <div class="stat"><span>STABILITY</span><div class="bar"><div id="stStability"></div></div><b></b></div>
+        </div>
+      </div>
+      <button class="arrow" data-act="nextBoat">&#9654;</button>
+    </div>
+    <div class="row"><button class="btn" data-go="main">BACK</button><button class="btn primary" data-act="start">RACE THIS BOAT</button></div>
+  </section>
+
+  <section id="scr-settings" class="screen">
+    <h2>SETTINGS</h2>
+    <div class="card">
+      <div class="opt"><span>GRAPHICS QUALITY</span><div class="seg" data-set="quality"><button data-val="low">LOW</button><button data-val="medium">MEDIUM</button><button data-val="high">HIGH</button></div></div>
+      <div class="opt"><span>MOTION BLUR</span><div class="seg" data-set="blur"><button data-val="true">ON</button><button data-val="false">OFF</button></div></div>
+      <div class="opt"><span>CAMERA SHAKE</span><div class="seg" data-set="shake"><button data-val="true">ON</button><button data-val="false">OFF</button></div></div>
+      <div class="opt"><span>LAPS</span><div class="seg" data-set="laps"><button data-val="1">1</button><button data-val="3">3</button><button data-val="5">5</button></div></div>
+      <div class="opt"><span>AI DIFFICULTY</span><div class="seg" data-set="difficulty"><button data-val="easy">EASY</button><button data-val="normal">NORMAL</button><button data-val="hard">HARD</button></div></div>
+      <div class="opt"><span>MASTER VOLUME</span><input id="volume" type="range" min="0" max="1" step="0.05"></div>
+    </div>
+    <div class="row"><button class="btn" data-go="main">BACK</button></div>
+  </section>
+
+  <section id="scr-how" class="screen">
+    <h2>HOW TO PLAY</h2>
+    <div class="card how">
+      <div class="keys">
+        <div><kbd>W</kbd> / <kbd>&uarr;</kbd><span>Accelerate (gas)</span></div>
+        <div><kbd>S</kbd> / <kbd>&darr;</kbd><span>Brake / mundur</span></div>
+        <div><kbd>A</kbd> / <kbd>&larr;</kbd><span>Steering kiri</span></div>
+        <div><kbd>D</kbd> / <kbd>&rarr;</kbd><span>Steering kanan</span></div>
+        <div><kbd>SPACE</kbd><span>Nitro Boost</span></div>
+        <div><kbd>R</kbd><span>Reset ke checkpoint terakhir</span></div>
+        <div><kbd>ESC</kbd><span>Pause</span></div>
+      </div>
+      <ul>
+        <li>Lewati semua <b>gerbang checkpoint</b> secara berurutan. Gerbang berikutnya menyala <b class="g">hijau</b>.</li>
+        <li>Ikuti jalur di antara buoy <b class="r">merah</b> (kiri) dan <b class="g">hijau</b> (kanan).</li>
+        <li>Hindari batu karang, peti, drum, dan batang kayu yang mengapung.</li>
+        <li>Berbelok terlalu tajam pada kecepatan tinggi membuat kapal <b>drift</b> dan kehilangan stabilitas — lepas gas sebelum tikungan.</li>
+        <li>Nitro terisi kembali perlahan. Gunakan di jalur lurus.</li>
+      </ul>
+    </div>
+    <div class="row"><button class="btn" data-go="main">BACK</button></div>
+  </section>
+</div>
+
+<!-- ================= PAUSE / RESULTS ================= -->
+<div id="pause" class="overlay hidden">
+  <div class="box">
+    <h2>PAUSED</h2>
+    <button class="btn primary" data-act="resume">RESUME</button>
+    <button class="btn" data-act="restart">RESTART</button>
+    <button class="btn" data-act="menu">MAIN MENU</button>
+  </div>
+</div>
+<div id="results" class="overlay hidden">
+  <div class="box wide">
+    <div class="lbl">RACE FINISHED</div>
+    <div class="finalpos"><span id="resPos">1</span><sup id="resSuf">ST</sup></div>
+    <div id="resMsg" class="resmsg"></div>
+    <div class="resgrid">
+      <div><span>TOTAL RACE TIME</span><b id="resTime">0:00.000</b></div>
+      <div><span>BEST LAP</span><b id="resBest">0:00.000</b></div>
+      <div><span>MAXIMUM SPEED</span><b id="resMax">0 KM/H</b></div>
+    </div>
+    <div id="resTable" class="restable"></div>
+    <div class="row"><button class="btn primary" data-act="restart">RESTART</button><button class="btn" data-act="menu">MAIN MENU</button></div>
+  </div>
+</div>
+<div id="fade"></div>
+<div id="err"></div>
+
+<script src="vendor/three.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/track.js"></script>
+<script src="js/world.js"></script>
+<script src="js/boats.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
